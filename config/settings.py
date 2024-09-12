@@ -7,8 +7,8 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.append(
-    os.path.join(BASE_DIR, "apps")
+sys.path.insert(
+    0, os.path.join(BASE_DIR, "apps")
 )
 
 env = environ.Env()
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_gis',
+    'django_filters',
 
     'bookings',
     'user',
@@ -159,6 +160,8 @@ REST_FRAMEWORK = {
         # 'rest_framework_gis.renderers.GeoJSONRenderer',
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 15,
 }
 
 if DEBUG:
