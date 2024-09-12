@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from apps.stadiums.models import Stadium, Image
 from apps.stadiums.serializers import StadiumSerializer, ImageSerializer
-from apps.permissions import IsOwnerOrAdmin, CanCrudStadium
+from apps.permissions import IsOwnerOrAdmin, HasObjectOwnerPermission
 from apps.user.models import RoleChoice
 
 
@@ -15,7 +15,7 @@ class PermissionsMixin:
         elif self.action in {'retrieve', 'list'}:
             self.permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
         else:
-            self.permission_classes = [IsAuthenticated, CanCrudStadium]
+            self.permission_classes = [IsAuthenticated, HasObjectOwnerPermission]
         return [perm() for perm in self.permission_classes]
 
 
