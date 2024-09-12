@@ -26,3 +26,11 @@ class CanDeleteBooking(BasePermission):
             or request.user == obj.stadium.creator
             or request.user.is_admin
         )
+
+
+class StadiumOwner(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return bool(
+            request.user.is_admin
+            or request.user == obj.stadium.creator
+        )

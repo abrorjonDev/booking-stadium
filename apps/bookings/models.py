@@ -21,6 +21,11 @@ class Booking(BaseModel):
         db_table = 'bookings'
         verbose_name = _("Booking")
         verbose_name_plural = _("Bookings")
+        indexes=[
+            models.Index(fields=['stadium', 'status']),
+            models.Index(fields=['date', 'start_time', 'end_time']),
+        ]
+
 
     def __str__(self):
         return self.stadium.name
