@@ -8,6 +8,7 @@ app_name = 'stadiums'
 
 router = DefaultRouter()
 router.register("stadiums", viewsets.StadiumViewSet, basename="stadiums")
+router.register("stadiums/images/", viewsets.ImageViewSet, basename="stadium-images")
 
 
 urlpatterns = [

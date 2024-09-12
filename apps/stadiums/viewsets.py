@@ -2,25 +2,13 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 
-from apps.stadiums.models import Stadium
-from apps.stadiums.serializers import StadiumSerializer
+from apps.stadiums.models import Stadium, Image
+from apps.stadiums.serializers import StadiumSerializer, ImageSerializer
 from apps.permissions import IsOwnerOrAdmin, CanCrudStadium
 from apps.user.models import RoleChoice
 
 
-@extend_schema(
-    request=StadiumSerializer,
-    responses={200: StadiumSerializer()},
-    tags=['Stadiums'])
-class StadiumViewSet(ModelViewSet):
-    serializer_class = StadiumSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
-    filterset_fields = {
-        'name': ['icontains'],
-        'address': ['icontains'],
-        'creator': ['exact'], # for Admin only
-    }
-
+class PermissionsMixin:
     def get_permissions(self):
         if self.action == 'create':
             self.permission_classes = [IsAuthenticated]
@@ -30,12 +18,8 @@ class StadiumViewSet(ModelViewSet):
             self.permission_classes = [IsAuthenticated, CanCrudStadium]
         return [perm() for perm in self.permission_classes]
 
-    def get_queryset(self):
-        user = self.request.user
-        if user.role == RoleChoice.OWNER:
-            return Stadium.objects.filter(creator=user, deleter__isnull=True)
-        return Stadium.objects.all()
 
+class PerformActionsMixin:
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
         self.request.user.role = RoleChoice.OWNER
@@ -47,3 +31,34 @@ class StadiumViewSet(ModelViewSet):
     def perform_destroy(self, instance):
         instance.deleter=self.request.user
         instance.save()
+
+
+
+@extend_schema(
+    request=StadiumSerializer,
+    responses={200: StadiumSerializer()},
+    tags=['Stadiums'])
+class StadiumViewSet(PermissionsMixin, PerformActionsMixin, ModelViewSet):
+    serializer_class = StadiumSerializer
+    filterset_fields = {
+        'name': ['icontains'],
+        'address': ['icontains'],
+        'creator': ['exact'], # for Admin only
+    }
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == RoleChoice.OWNER:
+            queryset = Stadium.objects.filter(creator=user, deleter__isnull=True)
+        else:
+            queryset = Stadium.objects.all()
+        return queryset.prefetch_related('images')
+
+
+@extend_schema(
+    request=ImageSerializer,
+    responses={200: ImageSerializer()},
+    tags=['Stadiums'])
+class ImageViewSet(PermissionsMixin, PerformActionsMixin, ModelViewSet):
+    queryset = Image.objects.all()
+    serializer_class = ImageSerializer

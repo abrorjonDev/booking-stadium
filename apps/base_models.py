@@ -8,8 +8,8 @@ class BaseModel(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     creator = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name="%(class)s_creator")
-    updater = models.ForeignKey('user.User', on_delete=models.SET_NULL, null=True, related_name="%(class)s_updater")
-    deleter = models.ForeignKey('user.User', on_delete=models.SET_NULL, null=True, related_name="%(class)s_deleter")
+    updater = models.ForeignKey('user.User', on_delete=models.SET_NULL, null=True, blank=True, related_name="%(class)s_updater")
+    deleter = models.ForeignKey('user.User', on_delete=models.SET_NULL, null=True, blank=True, related_name="%(class)s_deleter")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(null=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)

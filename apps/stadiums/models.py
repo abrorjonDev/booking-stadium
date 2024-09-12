@@ -27,7 +27,7 @@ class Stadium(BaseModel):
 
 class Image(BaseModel):
     image = models.ImageField(upload_to='stadiums/')
-    stadium = models.ForeignKey(Stadium, on_delete=models.CASCADE)
+    stadium = models.ForeignKey(Stadium, on_delete=models.CASCADE, related_name='images')
 
     def __str__(self):
         return self.stadium.name

@@ -20,6 +20,14 @@ class DistanceField(serializers.Field):
         return value.km
 
 
+class ImageSerializer(serializers.Serializer):
+    id = serializers.UUIDField(read_only=True)
+    stadium = serializers.PrimaryKeyRelatedField(
+        write_only=True, queryset=Stadium.objects.all()
+    )
+    image = serializers.ImageField()
+
+
 class StadiumSerializer(serializers.Serializer):
     id  = serializers.UUIDField(read_only=True)
     name = serializers.CharField()
@@ -28,6 +36,7 @@ class StadiumSerializer(serializers.Serializer):
     contacts = serializers.JSONField(allow_null=True)
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
     distance = DistanceField(read_only=True, default=None)
+    images = ImageSerializer(many=True, read_only=True)
 
     def create(self, validated_data):
         return Stadium.objects.create(**validated_data)

@@ -39,7 +39,7 @@ class StadiumsListAPI(ListAPIView):
                 distance=Distance('location', user_location)
             ).order_by('distance')
 
-        return self.queryset
+        return self.queryset.prefetch_related("images")
 
     @extend_schema(
         parameters=[
@@ -50,17 +50,17 @@ class StadiumsListAPI(ListAPIView):
             OpenApiParameter(
                 name='date',
                 location='query',
-                type='date',
+                type=date,
             ),
             OpenApiParameter(
                 name='start_time',
                 location='query',
-                type='time',
+                type=time,
             ),
             OpenApiParameter(
                 name='end_time',
                 location='query',
-                type='time',
+                type=time,
             ),
         ],
         request=StadiumSerializer,

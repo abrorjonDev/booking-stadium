@@ -1,19 +1,15 @@
 from django.contrib import admin
-from django import forms
-from mapwidgets.widgets import GoogleMapPointFieldWidget
-from .models import Stadium
+from .models import Stadium, Image
 
 
-class StadiumAdminForm(forms.ModelForm):
-    class Meta:
-        model = Stadium
-        fields = '__all__'
-        widgets = {
-            'location': GoogleMapPointFieldWidget,
-        }
+class ImageInline(admin.StackedInline):
+    model = Image
+    extra = 0
+    fields = ('image', 'creator')
+
 
 @admin.register(Stadium)
 class StadiumAdmin(admin.ModelAdmin):
-    form = StadiumAdminForm
     list_display = ('id', 'name', 'price')
     raw_id_fields = ('creator', 'updater', 'deleter')
+    inlines = [ImageInline]
