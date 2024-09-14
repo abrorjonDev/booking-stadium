@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
@@ -21,7 +20,7 @@ class BookingSerializer(serializers.ModelSerializer):
         stadium = data.get("stadium") or self.instance.stadium
 
         if start_time > end_time:
-            raise ValidationError(_("Wrong time orderings"))
+            raise serializers.ValidationError(_("Wrong time orderings"))
 
         bookings_qs = (
             Booking.objects.filter(
@@ -34,7 +33,6 @@ class BookingSerializer(serializers.ModelSerializer):
         if self.instance:
             bookings_qs = bookings_qs.exclude(id=self.instance.id)
         if bookings_qs.exists():
-            print(bookings_qs.values("start_time", "end_time"))
             raise serializers.ValidationError(_("Already booked for this time."))
 
         return data
